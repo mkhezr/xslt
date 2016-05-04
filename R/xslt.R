@@ -15,6 +15,7 @@
 #' @import rvest
 #' @import xml2
 #' @import httr
+#' @import stringi
 #' @importFrom stringr str_replace str_count
 #' @export
 #' @examples
@@ -49,6 +50,7 @@ xslt_transform <- function(xml_doc, xslt_doc,
   } else {
     if (is_html) {
       xml_doc <- as.character(read_html(xml_doc, encoding="UTF-8"))
+      xml_doc <- fixBadComments(xml_doc)
     } else {
       xml_doc <- as.character(read_xml(xml_doc, encoding="UTF-8"))
     }
@@ -117,4 +119,28 @@ read_xslt <- function(xslt_src) {
   tmp <- read_xml(xslt_src)
   class(tmp) <- c("xslt_document", class(tmp))
   return(tmp)
+}
+
+fixComment <- function(html) {
+  pattern <- "<!--(.*)-->"
+  stopifnot(grepl(pattern, html))
+  comment <- stri_sub(html, from = 5, to = -4)
+  comment <- gsub("(^-+)|(-+$)", "", comment) #remove - from the begining and end
+  comment <- gsub("-+", "-", comment) # replace -- with -
+  stri_join("<!--", comment , "-->")
+}
+
+fixBadComments <- function(html) {
+  # bad comment is a comment with double hyphen (--)
+  pattern_bad_comment <- "<!---+[^>]*-->|<!--[^>]*-+-->|<!--[^>]*--[^>]*-->"
+  bad_comments <- unlist(stri_match_all_regex(html, pattern_bad_comment))
+
+  if(all(is.na(bad_comments))) {
+    print("All comments are fine. No comment with double hyphen (--) found")
+    html
+  }
+  else{
+    fixed_comments <- sapply(bad_comments, fixComment)
+    stri_replace_all_fixed(html, bad_comments, fixed_comments, vectorize_all = FALSE)
+  }
 }

@@ -10,4 +10,4 @@ Suggests: testthat
 LinkingTo: Rcpp
 NeedsCompilation: yes
 SystemRequirements: libxml2, libxslt, xmlwrapp, xsltwrapp
-Imports: Rcpp, rvest, xml2, stringr, httr
+Imports: Rcpp, rvest, xml2, stringr, httr, stringi
