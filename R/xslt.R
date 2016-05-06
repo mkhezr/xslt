@@ -42,14 +42,14 @@
 #' res <- xslt_transform(xslt_src, xslt_src)
 #' cat(as.character(res))
 xslt_transform <- function(xml_doc, xslt_doc,
-                       is_html=FALSE, fix_ns=FALSE) {
+                       is_html=FALSE, fix_ns=FALSE, encoding="UTF-8") {
 
 
   if (inherits(xml_doc, c("xml_document", "xml_node"))) {
     xml_doc <- as.character(xml_doc)
   } else {
     if (is_html) {
-      xml_doc <- as.character(read_html(xml_doc, encoding="UTF-8"))
+      xml_doc <- as.character(read_html(xml_doc, encoding))
       xml_doc <- removeExtraContent(xml_doc)
       xml_doc <- fixBadComments(xml_doc)
     } else {
