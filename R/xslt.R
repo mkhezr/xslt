@@ -50,6 +50,7 @@ xslt_transform <- function(xml_doc, xslt_doc,
   } else {
     if (is_html) {
       xml_doc <- as.character(read_html(xml_doc, encoding="UTF-8"))
+      xml_doc <- removeExtraContent(xml_doc)
       xml_doc <- fixBadComments(xml_doc)
     } else {
       xml_doc <- as.character(read_xml(xml_doc, encoding="UTF-8"))
@@ -143,4 +144,9 @@ fixBadComments <- function(html) {
     fixed_comments <- sapply(bad_comments, fixComment)
     stri_replace_all_fixed(html, bad_comments, fixed_comments, vectorize_all = FALSE)
   }
+}
+
+removeExtraContent <- function(html) {
+  pieces <- unlist(str_split(html, "</html>"))
+  str_c(pieces[1], "</html>")
 }
