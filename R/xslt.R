@@ -137,7 +137,6 @@ fixBadComments <- function(html) {
   bad_comments <- unlist(stri_match_all_regex(html, pattern_bad_comment))
 
   if(all(is.na(bad_comments))) {
-    print("All comments are fine. No comment with double hyphen (--) found")
     html
   }
   else{
