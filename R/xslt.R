@@ -16,7 +16,7 @@
 #' @import xml2
 #' @import httr
 #' @import stringi
-#' @importFrom stringr str_replace str_count
+#' @importFrom stringr str_replace str_count, str_split
 #' @export
 #' @examples
 #' library(xml2)
@@ -123,17 +123,24 @@ read_xslt <- function(xslt_src) {
 }
 
 fixComment <- function(html) {
-  pattern <- "<!--(.*)-->"
-  stopifnot(grepl(pattern, html))
-  comment <- stri_sub(html, from = 5, to = -4)
-  comment <- gsub("(^-+)|(-+$)", "", comment) #remove - from the begining and end
-  comment <- gsub("-+", "-", comment) # replace -- with -
-  stri_join("<!--", comment , "-->")
+  conditional_comment_pattern <- "<!--\\[if.*\\]>|<!\\[endif\\]-->|<!-->"
+  if(grepl(conditional_comment_pattern, html)){
+    ""
+  }
+  else{
+    pattern <- "<!--(.*)-->"
+    stopifnot(grepl(pattern, html))
+    comment <- stri_sub(html, from = 5, to = -4)
+    comment <- gsub("(^-+)|(-+$)", "", comment) #remove - from the begining and end
+    comment <- gsub("-+", "-", comment) # replace -- with -
+    stri_join("<!--", comment , "-->")
+  }
 }
 
 fixBadComments <- function(html) {
-  # bad comment is a comment with double hyphen (--)
-  pattern_bad_comment <- "<!---+[^>]*-->|<!--[^>]*-+-->|<!--[^>]*--[^>]*-->"
+  # bad comment is a comment with double hyphen (--).
+  # Conditional comments are bad comments too for xslt transfrom.
+  pattern_bad_comment <- "<!---+[^>]*-->|<!--[^>]*-+-->|<!--[^>]*--[^>]*-->|<!--\\[if[^\\]]*\\]>|<!\\[endif\\]-->|<!-->"
   bad_comments <- unlist(stri_match_all_regex(html, pattern_bad_comment))
 
   if(all(is.na(bad_comments))) {
