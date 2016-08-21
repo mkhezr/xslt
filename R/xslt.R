@@ -50,12 +50,13 @@ xslt_transform <- function(xml_doc, xslt_doc,
   } else {
     if (is_html) {
       xml_doc <- as.character(read_html(xml_doc, encoding))
-      xml_doc <- removeExtraContent(xml_doc)
-      xml_doc <- fixBadComments(xml_doc)
     } else {
       xml_doc <- as.character(read_xml(xml_doc, encoding="UTF-8"))
     }
   }
+  
+  xml_doc <- removeExtraContent(xml_doc)
+  xml_doc <- fixBadComments(xml_doc)
 
   if (inherits(xslt_doc, c("xml_document", "xml_node"))) {
     xslt_doc <- as.character(xslt_doc)
