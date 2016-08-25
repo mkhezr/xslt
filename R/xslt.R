@@ -124,7 +124,7 @@ read_xslt <- function(xslt_src) {
 }
 
 fixComment <- function(html) {
-  conditional_comment_pattern <- "<!--\\[if.*\\]>|<!\\[endif\\]-->|<!-->"
+  conditional_comment_pattern <- "<!-- *\\[if.*\\] *>|<! *\\[endif\\] *-->|<!-->"
   if(grepl(conditional_comment_pattern, html)){
     ""
   }
@@ -141,7 +141,7 @@ fixComment <- function(html) {
 fixBadComments <- function(html) {
   # bad comment is a comment with double hyphen (--).
   # Conditional comments are bad comments too for xslt transfrom.
-  pattern_bad_comment <- "<!---+[^>]*-->|<!--[^>]*-+-->|<!--[^>]*--[^>]*-->|<!--\\[if[^\\]]*\\]>|<!\\[endif\\]-->|<!-->"
+  pattern_bad_comment <- "<!---+[^>]*-->|<!--[^>]*-+-->|<!--[^>]*--[^>]*-->|<!-- *\\[if[^\\]]*\\] *>|<! *\\[endif\\] *-->|<!-->"
   bad_comments <- unlist(stri_match_all_regex(html, pattern_bad_comment))
 
   if(all(is.na(bad_comments))) {
